@@ -60,24 +60,25 @@ class syntax_plugin_expandsection_expand extends DokuWiki_Syntax_Plugin
   {
     if ($state == DOKU_LEXER_UNMATCHED)
     {
-      $handler->_addCall('unformatted', array($match), $pos);
     }
-    return $match;
+    return array($state, $match);
   }
   
-  //$already=false;
-
   function render($mode, &$renderer, $data)
   {
     GLOBAL $already;
-    if ($already)
-    {
-      $renderer->doc.="<div id=expandtext style='display:block'>";
-      $already=false;
-    }
-    else
-    {
-      $renderer->doc.="</div><script language=\"JavaScript\" type=\"text/javascript\">
+    list($state,$match) = $data;
+        if($mode == 'xhtml'){
+            list($state,$match) = $data;
+            switch ($state) {
+              case DOKU_LEXER_ENTER : 
+                $renderer->doc.="<div id=expandtext style='display:block'>";     
+                list($color, $background) = $match;
+                $renderer->doc .= "<span style='$color $background'>"; 
+                break;
+ 
+              case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match); break;
+              case DOKU_LEXER_EXIT :       $renderer->doc .= "</div><script language=\"JavaScript\" type=\"text/javascript\">
 <!--
 function expand(b) 
 {
@@ -88,10 +89,11 @@ function expand(b)
 expand(false);
 // -->
 </script><br />
-<a href=\"javascript:expand(false)\"><b>-</b></a><a href=\"javascript:expand(true)\"><b>+</b></a>";
-      $already=true;
-    }
-    
+<a href=\"javascript:expand(false)\"><b>-</b></a><a href=\"javascript:expand(true)\"><b>+</b></a>";break;
+            }
+            return true;
+        }
+        return false;
     return true;
   }
 }
