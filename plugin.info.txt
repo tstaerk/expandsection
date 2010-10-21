@@ -1,0 +1,7 @@
+base  expandsection
+name  expandsection
+author Thorsten Staerk
+email  dev@staerk.de
+date   2010-10-19
+desc   Plugin that allows you to mark a section as collapsed and expandable.
+url    http://www.staerk.de/thorsten/expandsection

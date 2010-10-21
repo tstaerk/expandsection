@@ -61,18 +61,19 @@ class syntax_plugin_expandsection_expand extends DokuWiki_Syntax_Plugin
     if ($state == DOKU_LEXER_UNMATCHED)
     {
     }
-    return array($state, $match);
+    return array($state, $pos, $match);
   }
   
   function render($mode, &$renderer, $data)
   {
-    GLOBAL $already;
+    GLOBAL $oldpos;
     list($state,$match) = $data;
         if($mode == 'xhtml'){
-            list($state,$match) = $data;
+            list($state,$pos,$match) = $data;
             switch ($state) {
               case DOKU_LEXER_ENTER : 
-                $renderer->doc.="<div id=expandtext style='display:block'>";     
+                $renderer->doc.="<div id=expandtext$pos style='display:block'>";    
+                $oldpos=$pos; 
                 list($color, $background) = $match;
                 $renderer->doc .= "<span style='$color $background'>"; 
                 break;
@@ -80,16 +81,16 @@ class syntax_plugin_expandsection_expand extends DokuWiki_Syntax_Plugin
               case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match); break;
               case DOKU_LEXER_EXIT :       $renderer->doc .= "</div><script language=\"JavaScript\" type=\"text/javascript\">
 <!--
-function expand(b) 
+function expand$oldpos(b) 
 {
-  var expandtext = document.getElementById('expandtext');
+  var expandtext = document.getElementById('expandtext$oldpos');
   if (b) expandtext.style.display = 'block';
   if (!b) expandtext.style.display = 'none';
 }
-expand(false);
+expand$oldpos(false);
 // -->
 </script><br />
-<a href=\"javascript:expand(false)\"><b>-</b></a><a href=\"javascript:expand(true)\"><b>+</b></a>";break;
+<a href=\"javascript:expand$oldpos(false)\"><b>-</b></a><a href=\"javascript:expand$oldpos(true)\"><b>+</b></a>";break;
             }
             return true;
         }
