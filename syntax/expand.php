@@ -76,10 +76,9 @@ class syntax_plugin_expandsection_expand extends DokuWiki_Syntax_Plugin
       switch ($state) 
       {
         case DOKU_LEXER_ENTER : 
-          $renderer->doc.="<div id=expandtext$pos style='display:block'>";    
+          $renderer->doc.="<div id=expandtext$pos style='display:inline'>";    
           $oldpos=$pos; 
           list($color, $background) = $match;
-          $renderer->doc .= "<span style='$color $background'>"; 
           break;
         case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match)."<a href=\"javascript:expand$oldpos(false)\"><b>-</b></a>"; break;
         case DOKU_LEXER_EXIT :       $renderer->doc .= "</div><script language=\"JavaScript\" type=\"text/javascript\">
@@ -90,19 +89,19 @@ class syntax_plugin_expandsection_expand extends DokuWiki_Syntax_Plugin
             var expandsign = document.getElementById('expandsign$oldpos');
             if (b) 
             {
-              expandtext.style.display = 'block';
+              expandtext.style.display = 'inline';
               expandsign.style.display = 'none';
             }
             if (!b) 
             {
               expandtext.style.display = 'none';
-              expandsign.style.display = 'block';
+              expandsign.style.display = 'inline';
             }
           }
           expand$oldpos(false);
           // -->
           </script>
-          <div id=expandsign$oldpos style='display:block'><a href=\"javascript:expand$oldpos(true)\"><b>+</b></a></div>";break;
+          <div id=expandsign$oldpos style='display:inline'><a href=\"javascript:expand$oldpos(true)\"><b>+</b></a></div>";break;
       }
       return true;
     }
