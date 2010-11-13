@@ -65,36 +65,47 @@ class syntax_plugin_expandsection_expand extends DokuWiki_Syntax_Plugin
   }
   
   function render($mode, &$renderer, $data)
+  // expandtext$pos is the text on position $pos that can be expanded and collapsed.
+  // expandsign$pos is the link on that you click to expand the text on position $pos. expandsign$pos can typically be a "+" sign.
   {
     GLOBAL $oldpos;
     list($state,$match) = $data;
-        if($mode == 'xhtml'){
-            list($state,$pos,$match) = $data;
-            switch ($state) {
-              case DOKU_LEXER_ENTER : 
-                $renderer->doc.="<div id=expandtext$pos style='display:block'>";    
-                $oldpos=$pos; 
-                list($color, $background) = $match;
-                $renderer->doc .= "<span style='$color $background'>"; 
-                break;
- 
-              case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match); break;
-              case DOKU_LEXER_EXIT :       $renderer->doc .= "</div><script language=\"JavaScript\" type=\"text/javascript\">
-<!--
-function expand$oldpos(b) 
-{
-  var expandtext = document.getElementById('expandtext$oldpos');
-  if (b) expandtext.style.display = 'block';
-  if (!b) expandtext.style.display = 'none';
-}
-expand$oldpos(false);
-// -->
-</script><br />
-<a href=\"javascript:expand$oldpos(false)\"><b>-</b></a><a href=\"javascript:expand$oldpos(true)\"><b>+</b></a>";break;
+    if($mode == 'xhtml')
+    {
+      list($state,$pos,$match) = $data;
+      switch ($state) 
+      {
+        case DOKU_LEXER_ENTER : 
+          $renderer->doc.="<div id=expandtext$pos style='display:block'>";    
+          $oldpos=$pos; 
+          list($color, $background) = $match;
+          $renderer->doc .= "<span style='$color $background'>"; 
+          break;
+        case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match)."<a href=\"javascript:expand$oldpos(false)\"><b>-</b></a>"; break;
+        case DOKU_LEXER_EXIT :       $renderer->doc .= "</div><script language=\"JavaScript\" type=\"text/javascript\">
+          <!--
+          function expand$oldpos(b) 
+          {
+            var expandtext = document.getElementById('expandtext$oldpos');
+            var expandsign = document.getElementById('expandsign$oldpos');
+            if (b) 
+            {
+              expandtext.style.display = 'block';
+              expandsign.style.display = 'none';
             }
-            return true;
-        }
-        return false;
-    return true;
+            if (!b) 
+            {
+              expandtext.style.display = 'none';
+              expandsign.style.display = 'block';
+            }
+          }
+          expand$oldpos(false);
+          // -->
+          </script>
+          <div id=expandsign$oldpos style='display:block'><a href=\"javascript:expand$oldpos(true)\"><b>+</b></a></div>";break;
+      }
+      return true;
+    }
+    return false;
   }
 }
