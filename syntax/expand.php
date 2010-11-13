@@ -69,7 +69,6 @@ class syntax_plugin_expandsection_expand extends DokuWiki_Syntax_Plugin
   // expandsign$pos is the link on that you click to expand the text on position $pos. expandsign$pos can typically be a "+" sign.
   {
     GLOBAL $oldpos;
-    list($state,$match) = $data;
     if($mode == 'xhtml')
     {
       list($state,$pos,$match) = $data;
@@ -77,8 +76,7 @@ class syntax_plugin_expandsection_expand extends DokuWiki_Syntax_Plugin
       {
         case DOKU_LEXER_ENTER : 
           $renderer->doc.="<div id=expandtext$pos style='display:inline'>";    
-          $oldpos=$pos; 
-          list($color, $background) = $match;
+          $oldpos=$pos;
           break;
         case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match)."<a href=\"javascript:expand$oldpos(false)\"><b>-</b></a>"; break;
         case DOKU_LEXER_EXIT :       $renderer->doc .= "</div><script language=\"JavaScript\" type=\"text/javascript\">
